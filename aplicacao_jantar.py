@@ -11,7 +11,9 @@ update_queue = queue.Queue()
 
 
 class ControllablePhilosopher(threading.Thread):
-    # (Esta classe não sofreu alterações nesta versão)
+    """
+    Uma classe de Filósofo que pode ser parada e pausada externamente.
+    """
     def __init__(self, p_id, left_fork, right_fork, pause_event, **kwargs):
         super().__init__()
         self.p_id = p_id
@@ -20,7 +22,7 @@ class ControllablePhilosopher(threading.Thread):
         self.pause_event = pause_event
         self.running = True
         self.status = "pensando"
-        self.fork_count = 0 
+        self.fork_count = 0
 
         self.waiter = kwargs.get('waiter')
         self.barrier = kwargs.get('barrier')
@@ -46,7 +48,9 @@ class ControllablePhilosopher(threading.Thread):
             self.waiter.release()
         else: 
             if self.barrier:
-                try: self.barrier.wait(1)
+                # ALTERAÇÃO CRÍTICA AQUI: Removido o timeout de 1 segundo.
+                # Agora as threads esperam o tempo que for necessário.
+                try: self.barrier.wait() 
                 except (threading.BrokenBarrierError, RuntimeError): return
 
             self.left_fork.acquire(); self.fork_count = 1; self._send_update()
